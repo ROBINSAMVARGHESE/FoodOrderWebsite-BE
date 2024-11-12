@@ -24,8 +24,8 @@ const userSchema = new mongoose.Schema({
         default: 'user',
     },
 }, {
-    timestamps: true,  // Automatically adds createdAt and updatedAt fields
-    minimize: false,  // Ensures empty objects are saved as empty objects, not as null
+    timestamps: true,  
+    minimize: false,  
 });
 
 const Usermodel = mongoose.models.Users || mongoose.model('Users', userSchema);

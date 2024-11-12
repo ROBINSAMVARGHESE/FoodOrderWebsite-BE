@@ -1,16 +1,19 @@
-import usermodel from "../models/usermodels.js";
+import usermodel from '../models/usermodel';
+import fs from 'fs' 
 
 // Add a user
-const adduser = async (req, res) => {
-    const user = new usermodel({
-        userid: req.body.userid,
-        name: req.body.name,
-        email: req.body.email,
-        password: req.body.password,
-        address: req.body.address
-    });
-
+const addUser = async (req, res) => {
     try {
+        const { name, email, phone, street, city, postalCode } = req.body;
+        const user = new usermodel({
+            name,
+            email,
+            phone,
+            street,
+            city,
+            postalCode,
+            profilePic: req.file ? req.file.filename : undefined,  // If a profile picture is uploaded
+        });
         await user.save();
         res.status(201).json({ message: 'User added successfully', user });
     } catch (error) {
@@ -50,5 +53,4 @@ const deleteUser = async (req, res) => {
     }
 };
 
-export { adduser, getAllUsers, updateUser, deleteUser };
-
+export default { addUser, getAllUsers, updateUser, deleteUser };
