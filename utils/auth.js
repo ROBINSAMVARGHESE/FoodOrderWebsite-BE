@@ -1,7 +1,8 @@
 import jwt from 'jsonwebtoken';
 
-const createToken = (adminId) => {
-    return jwt.sign({ id: adminId }, process.env.JWT_SECRET, { expiresIn: '1h' });
+// Create token for both Admin and User
+const createToken = (id, role = 'user') => {
+    return jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: '5d' });
 };
 
-export default createToken ;
+export default createToken;

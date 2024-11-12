@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs'; // Importing bcryptjs
+import bcrypt from 'bcrypt'; 
 
 // Admin Schema definition
 const adminSchema = new mongoose.Schema(
