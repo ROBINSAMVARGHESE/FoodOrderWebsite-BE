@@ -1,58 +1,78 @@
 import foodmodel from '../models/foodmodel.js';
-import fs from 'fs' 
+import fs from 'fs'
 
 // Add a food item
 const addFood = async (req, res) => {
 
-    // let image_filename = `${req.file.filename}`;
+    let image_filename = `${req.file.filename}`;
 
     const food = new foodmodel({
         name: req.body.name,
-        restaurant: req.body.restaurant,
+        description: req.body.description,
         price: req.body.price,
+        discount: req.body.discount,
         category: req.body.category,
-        // image:image_filename
+        image: image_filename
     })
-  try {
-    await food.save();
-    res.status(201).json({ message: 'Food item added successfully', food });
-  } catch (error) {
-    res.status(500).json({ message: 'Error adding food item', error });
-  }
-};
-
-// Get all food items
-export const getAllFoods = async (req, res) => {
     try {
-        const foods = await foodmodel.find();
-        res.status(200).json(foods);
+        await food.save();
+        res.json({ success: true, message: "Food Added" });
     } catch (error) {
-        res.status(500).json({ message: 'Error retrieving food items', error: error.message });
+        console.log(error);
+        res.json({ success: false, message: "Error" });
     }
 };
 
-// Update a food item
-export const updateFood = async (req, res) => {
+// all foods list
+const listFood = async (req, res) => {
     try {
-        const food = await foodmodel.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!food) return res.status(404).json({ message: 'Food item not found' });
-        res.status(200).json({ message: 'Food item updated successfully', food });
+        const food = await foodmodel.find({});
+        res.json({ success: true, data: food });
     } catch (error) {
-        res.status(500).json({ message: 'Error updating food item', error: error.message });
+        console.log(error);
+        res.json({ success: false, message: "Error" });
     }
 };
 
-// Delete a food item
-export const deleteFood = async (req, res) => {
+const updateFood = async (req, res) => {
+    const { id, description } = req.body;
+
+    if (!id || !description) {
+        return res.status(400).json({ success: false, message: "ID and description are required" });
+    }
+
     try {
-        const food = await foodmodel.findByIdAndDelete(req.params.id);
-        if (!food) return res.status(404).json({ message: 'Food item not found' });
-        res.status(200).json({ message: 'Food item deleted successfully' });
+        // Find the food item by ID and update its description
+        const updatedFood = await foodmodel.findByIdAndUpdate(id, { description }, { new: true });
+
+        if (!updatedFood) {
+            return res.status(404).json({ success: false, message: "Food item not found" });
+        }
+
+        res.json({ success: true, message: "Food description updated successfully", data: updatedFood });
     } catch (error) {
-        res.status(500).json({ message: 'Error deleting food item', error: error.message });
+        console.log(error);
+        res.status(500).json({ success: false, message: "Error updating food description" });
     }
 };
 
-export { addFood }
+// remove food item
+const removeFood = async (req, res) => {
+    try {
+        const food = await foodmodel.findById(req.body.id);
+        fs.unlink(`uploads/${food.image}`, () => { })
+
+        await foodmodel.findByIdAndDelete(req.body.id)
+        res.json({ success: true, message: "Food Removed" })
+    } catch (error) {
+ console.log(error);
+ res.json({success:false,message:"Error"})
+ 
+    }
+}
+
+
+
+export { addFood, listFood, updateFood, removeFood }
 
 

@@ -1,19 +1,17 @@
-// authmiddleware.js
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
-export const adminAuthentication = (req, res, next) => {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) {
-        return res.status(401).json({ success: false, message: 'No token provided' });
-    }
-
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.adminId = decoded.id;  
-        next();
-    } catch (error) {
-        console.error('Token verification failed:', error);
-        res.status(401).json({ success: false, message: 'Invalid token' });
-    }
+const authmiddleware = async (req, res, next) => {
+  const { token } = req.headers;
+  if (!token) {
+    return res.json({ success: false, message: "Not Authorized Login Again" });
+  }
+  try {
+    const token_decode = jwt.verify(token, process.env.JWT_SECRET);
+    req.body.userId = token_decode.id;
+    next();
+  } catch (error) {
+    console.log(error);
+    res.json({success:false,message:"Error"});
+  }
 };
- 
+export default authmiddleware;
